@@ -46,6 +46,9 @@ export const useApi = createFetch({
     }
   },
 })
+export const useNonApi = createFetch({
+  baseUrl: '/',
+})
 export const appLogout = () => {
   useCookie('userAbilityRules').value = null
   useCookie('userData').value = null

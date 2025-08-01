@@ -9,6 +9,7 @@ const sekolah_id = ref();
 const sekolah = ref();
 const items = ref([]);
 const isAllowed = ref(true);
+const error = ref(false);
 const clickMe = async () => {
   await $api("/sekolah", {
     method: "POST",
@@ -33,6 +34,7 @@ const fetchData = async () => {
     let getData = response.data.value;
     items.value = getData.sekolah;
     sekolah.value = getData.user?.sekolah;
+    error.value = getData.error;
   } catch (error) {
     console.error(error);
   } finally {
@@ -48,6 +50,11 @@ const reset = async () => {
   await useApi(createUrl("/reset"));
   appLogout();
 };
+const connectToDapo = async () => {
+  console.log("connectToDapo");
+  await useNonApi(createUrl("normalkan"));
+  await fetchData();
+};
 </script>
 <template>
   <VCard color="#007BB6">
@@ -61,7 +68,22 @@ const reset = async () => {
       <p class="clamp-text text-white mb-0">Harap Gunakan dengan BIJAK!</p>
     </VCardText>
   </VCard>
-  <VCard class="mt-4">
+  <VCard class="mt-4" v-if="error">
+    <VCardTitle> Aplikasi tidak terhubung ke Database Dapodik! </VCardTitle>
+    <VCardItem>
+      <VBtn block size="large" @click="connectToDapo"
+        >Hubungkan Aplikasi ke Database Dapodik</VBtn
+      >
+    </VCardItem>
+  </VCard>
+  <!--template v-if="error">
+        <h2>Aplikasi tidak terhubung ke Database Dapodik!</h2>
+        <div>
+          <b-button block href="/normalkan" target="_blank" variant="primary" size="lg">Hubungkan
+            Aplikasi ke Database Dapodik</b-button>
+        </div>
+      </template-->
+  <VCard class="mt-4" v-else>
     <VCardItem>
       <template #append v-if="sekolah">
         <VBtn color="error" @click="resetSekolah">Reset</VBtn>

@@ -1,0 +1,80 @@
+<html>
+<head>
+<style>
+@font-face {
+    font-family: 'franklin';
+    src: url('/resources/fonts/Frabk.ttf');
+}
+body{
+	padding-left: 10px;
+	font-family: 'franklin';
+}
+#head-logo {
+    background: url('/resources/images/tutwuri-polos-small.png') no-repeat left center;
+    padding-left: 60px;
+	height: 50px;
+	margin-bottom: 20px;
+}
+#head-logo .title {
+	font-weight: bold;
+	font-size: 20px;
+}
+#head-logo .subtitle {
+	font-weight:lighter;
+	font-size: 14px;
+}
+#form {
+	font-size: 14px;
+	float: left;
+}
+label {
+	width: 180px;
+	display: block;
+	float: left;
+	font-size: 1em;
+	font-weight:bold;
+}
+.fieldset {
+	display: inline-block;
+	width: 600;
+}
+.table {
+    font-family: 'franklin';
+	border-spacing: 0px;
+    border-collapse: separate;
+	font-size: 1em;
+}
+
+</style>
+</head>
+<body>
+
+<div id="head-logo">
+<span class="title">Pedoman Tabel Sekolah Aman</span><br>
+<span class="subtitle">Dapodik Direktorat Jenderal Pendidikan Anak Usia Dini, Pendidikan Dasar dan Pendidikan Menengah</span>
+</div>
+
+<div id="deskripsi">
+<p>Tabel ini untuk melengkapi data terkait pelaksanaan sekolah aman, sesuai <strong>Permendikbud Nomor 82 Tahun 2015</strong>.</p>
+</div>
+
+<div id="form">
+<fieldset class="fieldset">
+<legend>Sekolah Aman</legend>
+<div><table class="table"><tr><td valign="top"><label>Satuan Tugas</label></td><td valign="top">Satuan tugas kepanitiaan.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>Nama Satuan Tugas</label></td><td valign="top">Nama satuan tugas sekolah aman. Contoh: <strong>Panitia Penanggulangan Tindak Kekerasan di SMP Negeri 4 Singkawang</strong>.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>Instansi</label></td><td valign="top">Nama instansi kepanitiaan yang dibentuk. Misalnya, diisi nama sekolah apabila dibentuk pada tingkat satuan pendidikan.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>Tingkat Satuan Tugas</label></td><td valign="top">Tingkat pembentukan panitia.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>SK Tugas</label></td><td valign="top">Nomor SK pembentukan panitia.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>TMT SK Tugas</label></td><td valign="top">Tanggal mulai berlakunya SK pembentukan panitia.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>TST SK Tugas</label></td><td valign="top">Tanggal akhir berlakunya SK pembentukan panitia.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>Terpasang Papan Sekolah Aman</label></td><td valign="top">Pemasangan papan tanda sekolah aman. Ketentuan tentang papan tanda sekolah aman diatur dalam <em>Permendikbud No. 82 Tahun 2015</em>, pada Bab IV, Pasal 8, bagian i.</td></tr></table></div>
+<!--<div><table class="table"><tr><td valign="top"><label>Tersedia Formulir</label></td><td valign="top">Pilih ketersediaan formulir pengaduan terkait sekolah aman.</td></tr></table></div>-->
+<!--<div><table class="table"><tr><td valign="top"><label>Tersedia Silabus</label></td><td valign="top">Pilih ketersediaan silabus dalam pendidikan/edukasi sekolah aman.</td></tr></table></div>-->
+<div><table class="table"><tr><td valign="top"><label>Diberlakukan POS (Prosedur Operasional Standar)</label></td><td valign="top">Pemberlakuan POS terkait sekolah aman.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>Telah Melakukan Sosialisasi POS</label></td><td valign="top">Keterlaksanaan sosialisasi terkait sekolah aman.</td></tr></table></div>
+<div><table class="table"><tr><td valign="top"><label>Bekerjasama dengan Lembaga Edukatif</label></td><td valign="top">Ada atau tidaknya kerja sama terhadap lembaga edukatif dalam pendidikan sekolah aman.</td></tr></table></div>
+</fieldset>
+</div>
+</body>
+</html>

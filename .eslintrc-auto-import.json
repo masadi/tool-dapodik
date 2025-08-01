@@ -362,6 +362,8 @@
     "whenever": true,
     "Oauth": true,
     "useAbility": true,
-    "appLogout": true
+    "appLogout": true,
+    "$nonApi": true,
+    "useNonApi": true
   }
 }
