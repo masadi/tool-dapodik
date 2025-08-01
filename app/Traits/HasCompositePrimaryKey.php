@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Traits;
-use \Illuminate\Database\Eloquent\Builder;
 
-trait HasCompositePrimaryKey
-{
+use Illuminate\Database\Eloquent\Builder;
+
+trait HasCompositePrimaryKey {
     /**
      * Set the keys for a save update query.
      *

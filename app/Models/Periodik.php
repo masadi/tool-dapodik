@@ -2,18 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\HasCompositePrimaryKey;
 
 class Periodik extends Model
 {
-    use HasFactory, HasCompositePrimaryKey;
+    use HasCompositePrimaryKey;
+    protected $connection = 'dapodik';
     public $incrementing = false;
-	public $keyType = 'string';
+    public $keyType = 'string';
 	protected $table = 'peserta_didik_longitudinal';
 	protected $primaryKey = ['peserta_didik_id', 'semester_id'];
-	protected $guarded = [];
-    const UPDATED_AT = 'last_update';
-    const CREATED_AT = 'create_date';
+    protected $guarded = [];
+    public $timestamps = false;
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class, 'semester_id', 'semester_id');
+    }
 }

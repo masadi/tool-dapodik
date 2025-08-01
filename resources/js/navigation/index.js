@@ -1,0 +1,44 @@
+export default [
+  {
+    title: 'Beranda',
+    to: { name: 'root' },
+    icon: { icon: 'tabler-smart-home' },
+    action: 'read',
+    subject: 'Web',
+  },
+  {
+    title: 'Tarik PTK',
+    to: { name: 'tarik-ptk' },
+    icon: { icon: 'tabler-user-down' },
+    action: 'read',
+    subject: 'Web',
+  },
+  {
+    title: 'Data PTK',
+    to: { name: 'ptk' },
+    icon: { icon: 'tabler-user-edit' },
+    action: 'read',
+    subject: 'Web',
+  },
+  {
+    title: 'Tarik PD',
+    to: { name: 'tarik-pd' },
+    icon: { icon: 'tabler-users-plus' },
+    action: 'read',
+    subject: 'Web',
+  },
+  {
+    title: 'Data PD',
+    to: { name: 'pd' },
+    icon: { icon: 'tabler-users' },
+    action: 'read',
+    subject: 'Web',
+  },
+  {
+    title: 'PIP',
+    to: { name: 'pip' },
+    icon: { icon: 'tabler-brand-cashapp' },
+    action: 'read',
+    subject: 'Web',
+  },
+]
