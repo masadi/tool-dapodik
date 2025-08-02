@@ -24,7 +24,7 @@ const fetchData = async () => {
     let getData = response.data.value;
     sekolah.value = getData.sekolah;
     form.value.sekolah_id = getData.sekolah?.sekolah_id;
-    form.value.tahun_ajaran_id = getData.semester.tahun_ajaran_id;
+    form.value.tahun_ajaran_id = getData.semester?.tahun_ajaran_id;
     arrayData.value.jenis_ptk = getData.jenis_ptk;
   } catch (error) {
     console.error(error);

@@ -24,7 +24,7 @@ const fetchData = async () => {
     let getData = response.data.value;
     sekolah.value = getData.sekolah;
     form.value.sekolah_id = getData.sekolah?.sekolah_id;
-    form.value.tahun_ajaran_id = getData.semester.tahun_ajaran_id;
+    form.value.tahun_ajaran_id = getData.semester?.tahun_ajaran_id;
     arrayData.value.jenis_pendaftaran = getData.jenis_pendaftaran;
   } catch (error) {
     console.error(error);
@@ -106,6 +106,11 @@ const form = ref({
   jenis_pendaftaran_id: null,
   tanggal_masuk_sekolah: null,
   nipd: null,
+  a_pernah_paud: null,
+  a_pernah_tk: null,
+  sekolah_asal: null,
+  id_hobby: null,
+  id_cita: null,
   rombongan_belajar_id: null,
   peserta_didik: null,
 });
@@ -138,6 +143,11 @@ const confirmDialog = async () => {
   form.value.jenis_pendaftaran_id = null;
   form.value.tanggal_masuk_sekolah = null;
   form.value.nipd = null;
+  form.value.a_pernah_paud = null;
+  form.value.a_pernah_tk = null;
+  form.value.sekolah_asal = null;
+  form.value.id_hobby = null;
+  form.value.id_cita = null;
   form.value.rombongan_belajar_id = null;
   form.value.peserta_didik = null;
   nik.value = undefined;
@@ -151,20 +161,26 @@ const confirmDialog = async () => {
   show.value = false;
   arrayData.value.rombongan_belajar = [];
 };
-const daftarPd = async (peserta_didik_id) => {
-  console.log(peserta_didik_id);
+const daftarPd = async (item, reg) => {
+  if (reg) {
+    form.value.a_pernah_paud = reg.a_pernah_paud;
+    form.value.a_pernah_tk = reg.a_pernah_tk;
+    form.value.sekolah_asal = reg.sekolah.nama;
+    form.value.id_hobby = reg.id_hobby;
+    form.value.id_cita = reg.id_cita;
+  }
   await $api("/cek-pd", {
     method: "POST",
     body: {
       sekolah_id: form.value.sekolah_id,
-      peserta_didik_id: peserta_didik_id,
+      peserta_didik_id: item.peserta_didik_id,
       nik: nik.value,
     },
     async onResponse({ response }) {
       const getData = response._data;
       pd.value = getData.pd;
       form.value.peserta_didik = result.value.find((pd) => {
-        return pd.peserta_didik_id === peserta_didik_id;
+        return pd.peserta_didik_id === item.peserta_didik_id;
       });
     },
   });
@@ -325,9 +341,7 @@ const tarikPd = (registrasi_id) => {
                               </td>
                               <td class="py-2">{{ reg.tanggal_keluar }}</td>
                               <td class="py-2">
-                                <VBtn
-                                  size="small"
-                                  @click="daftarPd(item.peserta_didik_id)"
+                                <VBtn size="small" @click="daftarPd(item, reg)"
                                   >Daftarkan</VBtn
                                 >
                               </td>
@@ -339,9 +353,7 @@ const tarikPd = (registrasi_id) => {
                                 Tidak data untuk ditampilan
                               </td>
                               <td>
-                                <VBtn
-                                  size="small"
-                                  @click="daftarPd(item.peserta_didik_id)"
+                                <VBtn size="small" @click="daftarPd(item, null)"
                                   >Daftarkan</VBtn
                                 >
                               </td>

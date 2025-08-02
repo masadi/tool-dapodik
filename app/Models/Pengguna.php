@@ -13,4 +13,8 @@ class Pengguna extends Model
 	protected $primaryKey = 'pengguna_id';
     protected $guarded = [];
     public $timestamps = false;
+    public function role()
+    {
+        return $this->hasOne(RolePengguna::class, 'pengguna_id', 'pengguna_id');
+    }
 }

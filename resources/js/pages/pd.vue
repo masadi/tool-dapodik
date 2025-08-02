@@ -17,7 +17,7 @@ const fetchData = async () => {
     const response = await useApi(createUrl("/cek-sekolah"));
     let getData = response.data.value;
     sekolah.value = getData.sekolah;
-    form.value.semester_id = getData.semester.semester_id;
+    form.value.semester_id = getData.semester?.semester_id;
     if (sekolah.value) {
       fetchItem();
     }

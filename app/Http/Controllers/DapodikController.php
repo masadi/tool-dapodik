@@ -31,6 +31,13 @@ use Artisan;
 
 class DapodikController extends Controller
 {
+    private function get_pengguna(){
+        $data = Pengguna::whereHas('role', function($query){
+            $query->where('peran_id', 10);
+            $query->where('sekolah_id', request()->sekolah_id);
+        })->first();
+        return $data?->pengguna_id;
+    }
     private function get_sekolah()
     {
         return Sekolah::on('dapodik')->withWhereHas('longitudinal', function ($query) {
@@ -112,6 +119,7 @@ class DapodikController extends Controller
                 $audit = Audit::orderBy('event_id', 'DESC')->first();
                 $user->sekolah_id = request()->sekolah_id;
                 $user->last_id = $audit->event_id;
+                $user->pengguna_id = $this->get_pengguna();
                 $user->save();
             }
             $data = [
@@ -120,9 +128,11 @@ class DapodikController extends Controller
                 'npsn' => $dapodik->npsn,
             ];
         } else {
+            $semester = NULL;
             try {
                 $JenisPendaftaran = JenisPendaftaran::where('daftar_sekolah', 1)->whereNull('expired_date')->orderBy('jenis_pendaftaran_id')->get();
                 $JenisPtk = JenisPtk::whereNull('expired_date')->orderBy('jenis_ptk_id')->get();
+                $semester = Semester::where('periode_aktif', 1)->first();
             } catch (\Throwable $th) {
                 //throw $th;
             }
@@ -130,7 +140,7 @@ class DapodikController extends Controller
                 'sekolah' => Sekolah::find($user->sekolah_id),
                 'jenis_pendaftaran' => $JenisPendaftaran,
                 'jenis_ptk' => $JenisPtk,
-                'semester' => Semester::where('periode_aktif', 1)->first(),
+                'semester' => $semester,
             ];
         }
         return response()->json($data);
@@ -302,7 +312,7 @@ class DapodikController extends Controller
                     'last_update' => Carbon::now()->addMinutes(120),
                     'soft_delete' => 0,
                     'last_sync' => Carbon::now()->addMinutes(90),
-                    'updater_id' => $data['Updater_ID'],
+                    'updater_id' => auth()->user()->pengguna_id,
                 ]
             );
             $reg = RegistrasiPesertaDidik::find(request()->registrasi_id);
@@ -310,11 +320,14 @@ class DapodikController extends Controller
                 $reg = new RegistrasiPesertaDidik;
                 $reg->registrasi_id = Str::uuid();
                 $reg->create_date = Carbon::now();
-                $reg->updater_id = Str::uuid();
+                $reg->updater_id = auth()->user()->pengguna_id;
                 $reg->peserta_didik_id = $data['peserta_didik_id'];
                 $reg->sekolah_id = request()->sekolah_id;
-                $reg->id_hobby = '-1';
-                $reg->id_cita = '-1';
+                $reg->id_hobby = request()->id_hobby ?? '-1';
+                $reg->id_cita = request()->id_cita ?? '-1';
+                $reg->a_pernah_paud = request()->a_pernah_paud;
+                $reg->a_pernah_tk = request()->a_pernah_tk;
+                $reg->sekolah_asal = request()->sekolah_asal;
             }
             $reg->jenis_pendaftaran_id = request()->jenis_pendaftaran_id;
             $reg->tanggal_masuk_sekolah = request()->tanggal_masuk_sekolah;
@@ -336,7 +349,7 @@ class DapodikController extends Controller
                     'last_update' => Carbon::now()->addMinutes(120),
                     'soft_delete' => 0,
                     'last_sync' => Carbon::now()->addMinutes(90),
-                    'updater_id' => Str::uuid(),
+                    'updater_id' => auth()->user()->pengguna_id,
                 ]
             );
         } else {
@@ -365,7 +378,7 @@ class DapodikController extends Controller
                 $ptk_terdaftar = new PtkTerdaftar;
                 $ptk_terdaftar->ptk_terdaftar_id = Str::uuid();
                 $ptk_terdaftar->create_date = Carbon::now();
-                $ptk_terdaftar->updater_id = Str::uuid();
+                $ptk_terdaftar->updater_id = auth()->user()->pengguna_id;
                 $ptk_terdaftar->ptk_id = $ptk['ptk_id'];
                 $ptk_terdaftar->sekolah_id = request()->sekolah_id;
             }
@@ -460,7 +473,7 @@ class DapodikController extends Controller
                     'last_update' => Carbon::now()->addMinutes(120),
                     'last_sync' => Carbon::now()->addMinutes(90),
                     'soft_delete' => 0,
-                    'updater_id' => Str::uuid(),
+                    'updater_id' => auth()->user()->pengguna_id,
                 ]);
                 RolePengguna::create([
                     'id_role_pengguna' => Str::uuid(),
@@ -587,7 +600,7 @@ class DapodikController extends Controller
             if (!$find) {
                 $find = new Periodik;
                 $find->create_date = Carbon::now();
-                $find->updater_id = Str::uuid();
+                $find->updater_id = auth()->user()->pengguna_id;
                 $find->peserta_didik_id = request()->peserta_didik_id;
                 $find->semester_id = request()->semester_id;
             }
