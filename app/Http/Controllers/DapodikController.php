@@ -73,6 +73,7 @@ class DapodikController extends Controller
         $user->sekolah = Sekolah::on('dapodik')->with(['yayasan'])->find($user->sekolah_id);
         //Sekolah::find($user->sekolah_id);
         $data = [
+            'jam_sinkron' => $this->jam_sinkron(),
             'sekolah' => $sekolah,
             'user' => $user,
             'error' => $error,
@@ -149,6 +150,7 @@ class DapodikController extends Controller
                 'jenis_pendaftaran' => $JenisPendaftaran,
                 'jenis_ptk' => $JenisPtk,
                 'semester' => $semester,
+                'jam_sinkron' => $this->jam_sinkron(),
             ];
         }
         return response()->json($data);
@@ -703,5 +705,13 @@ class DapodikController extends Controller
             'text' => 'Aplikasi berhasil direset!',
         ];
         return response()->json($data);
+    }
+    private function jam_sinkron(){
+        $timezone = config('app.timezone');
+        $start = Carbon::create(date('Y'), date('m'), date('d'), '00', '00', '01', 'Asia/Jakarta');
+        $end = Carbon::create(date('Y'), date('m'), date('d'), '03', '00', '00', 'Asia/Jakarta');
+        $now = Carbon::now()->timezone($timezone);
+        $jam_sinkron = Carbon::now()->timezone($timezone)->isBetween($start, $end, false);
+        return $jam_sinkron;
     }
 }

@@ -9,6 +9,7 @@ const sekolah_id = ref();
 const sekolah = ref();
 const items = ref([]);
 const isAllowed = ref(true);
+const jam_sinkron = ref(true);
 const error = ref(false);
 const clickMe = async () => {
   const find = items.value.find((s) => {
@@ -39,6 +40,7 @@ const fetchData = async () => {
     items.value = getData.sekolah;
     sekolah.value = getData.user?.sekolah;
     error.value = getData.error;
+    jam_sinkron.value = getData.jam_sinkron;
   } catch (error) {
     console.error(error);
   } finally {
@@ -95,13 +97,6 @@ const restore = async (yayasan_id) => {
       >
     </VCardItem>
   </VCard>
-  <!--template v-if="error">
-        <h2>Aplikasi tidak terhubung ke Database Dapodik!</h2>
-        <div>
-          <b-button block href="/normalkan" target="_blank" variant="primary" size="lg">Hubungkan
-            Aplikasi ke Database Dapodik</b-button>
-        </div>
-      </template-->
   <VCard class="mt-4" v-else>
     <VCardItem>
       <template #append v-if="sekolah">
@@ -142,22 +137,34 @@ const restore = async (yayasan_id) => {
       </VTable>
     </VCardText>
     <VCardText v-else>
-      <AppAutocomplete
-        v-model="sekolah_id"
-        :items="items"
-        item-title="nama"
-        item-value="sekolah_id"
-        placeholder="Pilih Sekolah"
-        :disabled="isDisabled"
-        :loading="isDisabled"
-      >
-        <template #append>
-          <VBtn :icon="$vuetify.display.smAndDown" @click="clickMe">
-            <VIcon icon="tabler-device-floppy" color="#fff" size="22" />
-            <span v-if="$vuetify.display.mdAndUp" class="ms-3">Simpan</span>
-          </VBtn>
-        </template>
-      </AppAutocomplete>
+      <template v-if="jam_sinkron">
+        <AppAutocomplete
+          v-model="sekolah_id"
+          :items="items"
+          item-title="nama"
+          item-value="sekolah_id"
+          placeholder="Pilih Sekolah"
+          :disabled="isDisabled"
+          :loading="isDisabled"
+        >
+          <template #append>
+            <VBtn :icon="$vuetify.display.smAndDown" @click="clickMe">
+              <VIcon icon="tabler-device-floppy" color="#fff" size="22" />
+              <span v-if="$vuetify.display.mdAndUp" class="ms-3">Simpan</span>
+            </VBtn>
+          </template>
+        </AppAutocomplete>
+      </template>
+      <template v-else>
+        <VAlert color="error" class="text-center" variant="tonal">
+          <h2 class="mt-4 mb-4">Penyesuaian Waktu Layanan Tarik Data Dapodik</h2>
+          <p>
+            Dikarenakan adanya proses rutin sinkronisasi data Dapodik di Server PUSDATIN,
+            <br />maka layanan sinkronisasi hanya dapat diakses antara pukul
+            <span class="text-danger"><b>03.00 s/d 24.00 (WIB)</b></span>
+          </p>
+        </VAlert>
+      </template>
     </VCardText>
     <VDialog v-model="isDialogVisible" persistent class="v-dialog-sm">
       <DialogCloseBtn @click="isDialogVisible = !isDialogVisible" />

@@ -17,6 +17,7 @@ onMounted(async () => {
 });
 const isLoading = ref(false);
 const sekolah = ref();
+const jam_sinkron = ref(true);
 const fetchData = async () => {
   isLoading.value = true;
   try {
@@ -26,6 +27,7 @@ const fetchData = async () => {
     form.value.sekolah_id = getData.sekolah?.sekolah_id;
     form.value.tahun_ajaran_id = getData.semester?.tahun_ajaran_id;
     arrayData.value.jenis_ptk = getData.jenis_ptk;
+    jam_sinkron.value = getData.jam_sinkron;
   } catch (error) {
     console.error(error);
   } finally {
@@ -193,28 +195,41 @@ const confirmDialog = async () => {
       </VCardItem>
       <VDivider />
       <VCardText>
-        <AppTextField
-          v-model="nik"
-          required
-          clearable
-          placeholder="Masukkan NIK"
-          type="text"
-          :rules="[requiredValidator]"
-          :error-messages="errors.nik"
-        >
-          <!-- Append -->
-          <template #append>
-            <VBtn
-              :icon="$vuetify.display.smAndDown"
-              @click="cariNik"
-              :disabled="btnLoading"
-              :loading="btnLoading"
-            >
-              <VIcon icon="tabler-search" color="#fff" size="22" />
-              <span v-if="$vuetify.display.mdAndUp" class="ms-3">Cari...</span>
-            </VBtn>
-          </template>
-        </AppTextField>
+        <template v-if="jam_sinkron">
+          <AppTextField
+            v-model="nik"
+            required
+            clearable
+            placeholder="Masukkan NIK"
+            type="text"
+            :rules="[requiredValidator]"
+            :error-messages="errors.nik"
+          >
+            <!-- Append -->
+            <template #append>
+              <VBtn
+                :icon="$vuetify.display.smAndDown"
+                @click="cariNik"
+                :disabled="btnLoading"
+                :loading="btnLoading"
+              >
+                <VIcon icon="tabler-search" color="#fff" size="22" />
+                <span v-if="$vuetify.display.mdAndUp" class="ms-3">Cari...</span>
+              </VBtn>
+            </template>
+          </AppTextField>
+        </template>
+        <template v-else>
+          <VAlert color="error" class="text-center" variant="tonal">
+            <h2 class="mt-4 mb-4">Penyesuaian Waktu Layanan Tarik Data Dapodik</h2>
+            <p>
+              Dikarenakan adanya proses rutin sinkronisasi data Dapodik di Server
+              PUSDATIN,
+              <br />maka layanan sinkronisasi hanya dapat diakses antara pukul
+              <span class="text-danger"><b>03.00 s/d 24.00 (WIB)</b></span>
+            </p>
+          </VAlert>
+        </template>
       </VCardText>
     </VCard>
     <VCard color="#007BB6" v-else>
