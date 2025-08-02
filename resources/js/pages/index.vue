@@ -11,10 +11,14 @@ const items = ref([]);
 const isAllowed = ref(true);
 const error = ref(false);
 const clickMe = async () => {
+  const find = items.value.find((s) => {
+    return s.sekolah_id === sekolah_id.value;
+  });
   await $api("/sekolah", {
     method: "POST",
     body: {
       sekolah_id: sekolah_id.value,
+      pengguna_id: find?.pengguna?.pengguna_id,
     },
     async onResponse({ response }) {
       let getData = response._data;
@@ -54,6 +58,21 @@ const connectToDapo = async () => {
   console.log("connectToDapo");
   await useNonApi(createUrl("normalkan"));
   await fetchData();
+};
+const restore = async (yayasan_id) => {
+  console.log(yayasan_id);
+  await $api("/sekolah", {
+    method: "POST",
+    body: {
+      data: "yayasan",
+      yayasan_id: yayasan_id,
+    },
+    async onResponse({ response }) {
+      let getData = response._data;
+      console.log(getData);
+      await fetchData();
+    },
+  });
 };
 </script>
 <template>
@@ -103,6 +122,23 @@ const connectToDapo = async () => {
           <tr>
             <td>NPSN</td>
             <td>{{ sekolah.npsn }}</td>
+          </tr>
+          <tr>
+            <td>Yayasan</td>
+            <td>
+              {{ sekolah.yayasan?.nama }}
+              <template v-if="sekolah.yayasan?.soft_delete == '1'">
+                <VBtn
+                  color="error"
+                  size="small"
+                  class="ms-4"
+                  @click="restore(sekolah.yayasan.yayasan_id)"
+                >
+                  <VIcon start icon="tabler-restore" />
+                  Restore Yayasan
+                </VBtn>
+              </template>
+            </td>
           </tr>
         </tbody>
       </VTable>

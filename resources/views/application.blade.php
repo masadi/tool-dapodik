@@ -50,6 +50,7 @@
 
         if (primaryColor)
             document.documentElement.style.setProperty('--initial-loader-color', primaryColor)
+        const app_url = '{{ url('/') }}'
     </script>
 </body>
 

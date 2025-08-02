@@ -22,6 +22,7 @@ use App\Models\RwyPendFormal;
 use App\Models\Sekolah;
 use App\Models\Semester;
 use App\Models\User;
+use App\Models\Yayasan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -40,9 +41,9 @@ class DapodikController extends Controller
     }
     private function get_sekolah()
     {
-        return Sekolah::on('dapodik')->withWhereHas('longitudinal', function ($query) {
-            $query->whereHas('semester', function ($query) {
-                $query->where('periode_aktif', 1);
+        return Sekolah::on('dapodik')->withWhereHas('pengguna', function ($query) {
+            $query->whereHas('role', function($query){
+                $query->where('peran_id', 10);
             });
         })->get();
     }
@@ -69,7 +70,8 @@ class DapodikController extends Controller
             $error = Str::of($th->getMessage())->contains('fe_sendauth');
         }
         $user = auth()->user();
-        $user->sekolah = Sekolah::find($user->sekolah_id);
+        $user->sekolah = Sekolah::on('dapodik')->with(['yayasan'])->find($user->sekolah_id);
+        //Sekolah::find($user->sekolah_id);
         $data = [
             'sekolah' => $sekolah,
             'user' => $user,
@@ -83,6 +85,12 @@ class DapodikController extends Controller
         $JenisPendaftaran = [];
         $JenisPtk = [];
         if ($request->isMethod('post')) {
+            if(request()->data == 'yayasan'){
+                Yayasan::where('yayasan_id', request()->yayasan_id)->update(['soft_delete' => 0]);
+                return response()->json([
+                    'request' => request()->yayasan_id, 
+                ]);
+            }
             request()->validate(
                 [
                     'sekolah_id' => 'required',
@@ -119,7 +127,7 @@ class DapodikController extends Controller
                 $audit = Audit::orderBy('event_id', 'DESC')->first();
                 $user->sekolah_id = request()->sekolah_id;
                 $user->last_id = $audit->event_id;
-                $user->pengguna_id = $this->get_pengguna();
+                $user->pengguna_id = (request()->pengguna_id) ? request()->pengguna_id : $this->get_pengguna();
                 $user->save();
             }
             $data = [

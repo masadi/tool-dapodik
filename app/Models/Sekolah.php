@@ -15,4 +15,12 @@ class Sekolah extends Model
     {
         return $this->hasOne(SekolahLongitudinal::class, 'sekolah_id', 'sekolah_id');
     }
+    public function pengguna()
+    {
+        return $this->hasOne(Pengguna::class, 'sekolah_id', 'sekolah_id');
+    }
+    public function yayasan()
+    {
+        return $this->belongsTo(Yayasan::class, 'yayasan_id', 'yayasan_id');
+    }
 }
