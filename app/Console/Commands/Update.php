@@ -26,6 +26,7 @@ class Update extends Command
     public function handle()
     {
         $this->info('Silahkan tunggu, sedang proses update aplikasi....');
+        $this->call('optimize:clear');
         //exec("git pull origin main");
         exec("git pull https://github.com/masadi/tool-dapodik.git");
         exec("git clean -df");
