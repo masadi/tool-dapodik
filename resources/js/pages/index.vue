@@ -107,9 +107,7 @@ const restore = async (yayasan_id) => {
       <template #append v-if="sekolah">
         <VBtn color="error" @click="resetSekolah">Reset</VBtn>
       </template>
-      <VCardTitle class="text-white">
-        {{ sekolah ? "Data" : "Registrasi" }} Sekolah
-      </VCardTitle>
+      <VCardTitle> {{ sekolah ? "Data" : "Registrasi" }} Sekolah </VCardTitle>
     </VCardItem>
     <VCardText v-if="sekolah">
       <VAlert color="error" v-if="!isAllowed"> NPSN tidak terdaftar! </VAlert>
