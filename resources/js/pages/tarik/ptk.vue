@@ -220,15 +220,7 @@ const confirmDialog = async () => {
           </AppTextField>
         </template>
         <template v-else>
-          <VAlert color="error" class="text-center" variant="tonal">
-            <h2 class="mt-4 mb-4">Penyesuaian Waktu Layanan Tarik Data Dapodik</h2>
-            <p>
-              Dikarenakan adanya proses rutin sinkronisasi data Dapodik di Server
-              PUSDATIN,
-              <br />maka layanan sinkronisasi hanya dapat diakses antara pukul
-              <span class="text-danger"><b>03.00 s/d 24.00 (WIB)</b></span>
-            </p>
-          </VAlert>
+          <JamSinkron />
         </template>
       </VCardText>
     </VCard>
