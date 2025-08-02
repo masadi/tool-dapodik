@@ -14,7 +14,7 @@
     <div id="app">
         <div id="loading-bg">
             <div class="loading-logo">
-                <!-- SVG Logo -->
+                <!-- SVG Logo
                 <svg width="86" height="48" viewBox="0 0 34 24" fill="none"
                     xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd"
@@ -28,6 +28,8 @@
                         d="M8.25781 17.6914L25.1339 0.3125H33.9991V7.62657C33.9991 7.62657 33.8144 10.0645 32.5743 11.3686L21.0179 23.6875H14.5487L8.25781 17.6914Z"
                         fill="var(--initial-loader-color)" />
                 </svg>
+                -->
+                <img src="/images/logo.png" width="86">
             </div>
             <div class=" loading">
                 <div class="effect-1 effects"></div>

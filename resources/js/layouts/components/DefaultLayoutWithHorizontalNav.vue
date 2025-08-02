@@ -8,7 +8,7 @@ import NavbarThemeSwitcher from "@/layouts/components/NavbarThemeSwitcher.vue";
 import UserProfile from "@/layouts/components/UserProfile.vue";
 import NavBarI18n from "@core/components/I18n.vue";
 import { HorizontalNavLayout } from "@layouts";
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
+//import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 </script>
 
 <template>
@@ -16,8 +16,8 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
     <!-- 👉 navbar -->
     <template #navbar>
       <RouterLink to="/" class="app-logo d-flex align-center gap-x-3">
-        <VNodeRenderer :nodes="themeConfig.app.logo" />
-
+        <!--VNodeRenderer :nodes="themeConfig.app.logo" /-->
+        <img :src="themeConfig.app.logo" width="36" />
         <h1 class="app-title font-weight-bold leading-normal text-xl text-capitalize">
           {{ themeConfig.app.title }}
         </h1>

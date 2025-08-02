@@ -67,7 +67,8 @@ const useSocialLogin = async (code, provider) => {
           <VCardTitle>
             <RouterLink to="/">
               <div class="app-logo">
-                <VNodeRenderer :nodes="themeConfig.app.logo" />
+                <!--VNodeRenderer :nodes="themeConfig.app.logo" /-->
+                <img :src="themeConfig.app.logo" width="36" />
                 <h1 class="app-logo-title">
                   {{ themeConfig.app.title }}
                 </h1>
