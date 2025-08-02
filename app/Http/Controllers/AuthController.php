@@ -24,11 +24,13 @@ class AuthController extends Controller
             return [
                 'message' => 'Incorrect Data Posted',
                 'status' => 445,
+                'error' => TRUE,
             ];
         }
 
         $hash = $r->hash ?? null;
         $hashuser = Cache::get($hash);
+        $message = NULL;
         if ($hashuser) {
             return $this->SocialSignupNext($r, $hashuser);
         }
@@ -75,11 +77,13 @@ class AuthController extends Controller
 
         } catch (\Throwable $th) {
             logger($th);
+            $message = $th->getMessage();
         }
 
         return [
-            'message' => 'Unknow Error',
+            'message' => $message,
             'status' => 445,
+            'error' => TRUE,
         ];
     }
     public function SocialSignupNext($request, $userdata)

@@ -9,6 +9,4 @@ const options = {
         },
     }
 }
-console.log(options);
-
 export const Oauth = new UniversalSocialauth(axios, options)

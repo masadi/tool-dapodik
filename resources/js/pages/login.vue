@@ -28,6 +28,7 @@ const useSocialLogin = async (code, provider) => {
     body: pdata,
   });
   const { userAbility, accessToken, userData, error, message } = res;
+  loading.value = false;
   if (error) {
     textError.value = message;
   } else {
