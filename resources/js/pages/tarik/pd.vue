@@ -67,9 +67,9 @@ const cariNik = async () => {
         show.value = true;
         pd.value = getData.pd;
         result.value = getData.result;
-        if (!Array.isArray(result.value)) {
+        /*if (!Array.isArray(result.value)) {
           form.value.peserta_didik = result.value;
-        }
+        }*/
         arrayData.value.rombongan_belajar = getData.rombongan_belajar;
         //pd.value = getData.pd;
         form.value.ptk = result.value;
@@ -179,9 +179,13 @@ const daftarPd = async (item, reg) => {
     async onResponse({ response }) {
       const getData = response._data;
       pd.value = getData.pd;
-      form.value.peserta_didik = result.value.find((pd) => {
-        return pd.peserta_didik_id === item.peserta_didik_id;
-      });
+      if (Array.isArray(result.value)) {
+        form.value.peserta_didik = result.value.find((pd) => {
+          return pd.peserta_didik_id === item.peserta_didik_id;
+        });
+      } else {
+        form.value.peserta_didik = result.value;
+      }
     },
   });
 };
@@ -382,6 +386,7 @@ const tarikPd = (registrasi_id) => {
               <th class="text-center">NPSN</th>
               <th class="text-center">Jenis Keluar</th>
               <th class="text-center">Tanggal Keluar</th>
+              <th class="text-center">Daftarkan</th>
             </tr>
           </thead>
           <tbody>
@@ -399,6 +404,9 @@ const tarikPd = (registrasi_id) => {
                 <td class="text-center">{{ reg.sekolah.npsn }}</td>
                 <td class="text-center">{{ jenis_keluar(reg.jenis_keluar_id) }}</td>
                 <td class="text-center">{{ reg.tanggal_keluar }}</td>
+                <td class="py-2">
+                  <VBtn size="small" @click="daftarPd(result, reg)">Daftarkan</VBtn>
+                </td>
               </tr>
             </template>
             <template v-else>

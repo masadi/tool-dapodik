@@ -169,7 +169,13 @@ class DapodikController extends Controller
                 $query->where('rombongan_belajar.soft_delete', 0);
                 $query->where('anggota_rombel.soft_delete', 0);
                 $query->where('jenis_rombel', 1);
-            }])->where('nik', request()->nik)->first();
+            }])->where(function($query){
+                if(Str::isUuid(request()->nik)){
+                    $query->where('peserta_didik_id', request()->nik);
+                } else {
+                    $query->where('nik', request()->nik);
+                }
+            })->first();
         }
         if (request()->data == 'guru') {
             $ptk = Ptk::withWhereHas('ptk_terdaftar', function ($query) {
@@ -190,9 +196,16 @@ class DapodikController extends Controller
                 $query->where('soft_delete', 0);
                 $query->where('jenis_rombel', 1);
             })->orderBy('tingkat_pendidikan_id')->orderBy('nama')->get();
-            $response = Http::post('http://sync.erapor-smk.net/api/v7/' . request()->data, [
-                'nik' => request()->nik,
-            ]);
+            if(Str::isUuid(request()->nik)){
+                $post = [
+                    'peserta_didik_id' => request()->nik,
+                ];
+            } else {
+                $post = [
+                    'nik' => request()->nik,
+                ];
+            }
+            $response = Http::post('http://sync.erapor-smk.net/api/v7/' . request()->data, $post);
         } catch (\Throwable $th) {
             //throw $th;
         }
