@@ -209,6 +209,9 @@ const tarikPd = (registrasi_id) => {
       <VDivider />
       <VCardText>
         <template v-if="jam_sinkron">
+          <JamSinkron />
+        </template>
+        <template v-else>
           <AppTextField
             v-model="nik"
             required
@@ -231,9 +234,6 @@ const tarikPd = (registrasi_id) => {
               </VBtn>
             </template>
           </AppTextField>
-        </template>
-        <template v-else>
-          <JamSinkron />
         </template>
       </VCardText>
     </VCard>

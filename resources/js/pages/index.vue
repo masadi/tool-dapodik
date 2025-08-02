@@ -9,7 +9,7 @@ const sekolah_id = ref();
 const sekolah = ref();
 const items = ref([]);
 const isAllowed = ref(true);
-const jam_sinkron = ref(true);
+const jam_sinkron = ref(false);
 const error = ref(false);
 const clickMe = async () => {
   const find = items.value.find((s) => {
@@ -137,7 +137,11 @@ const restore = async (yayasan_id) => {
       </VTable>
     </VCardText>
     <VCardText v-else>
+      {{ jam_sinkron }}
       <template v-if="jam_sinkron">
+        <JamSinkron />
+      </template>
+      <template v-else>
         <AppAutocomplete
           v-model="sekolah_id"
           :items="items"
@@ -154,9 +158,6 @@ const restore = async (yayasan_id) => {
             </VBtn>
           </template>
         </AppAutocomplete>
-      </template>
-      <template v-else>
-        <JamSinkron />
       </template>
     </VCardText>
     <VDialog v-model="isDialogVisible" persistent class="v-dialog-sm">
