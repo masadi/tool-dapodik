@@ -5,8 +5,8 @@ const options = {
     providers: {
         google: {
             clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-            //redirectUri: import.meta.env.VITE_GOOGLE_CLIENT_REDIRECT,
-            redirectUri: `${themeConfig.app.url}/auth/social/google/callback`
+            redirectUri: import.meta.env.VITE_GOOGLE_CLIENT_REDIRECT,
+            //redirectUri: `${themeConfig.app.url}/auth/social/google/callback`
         },
     }
 }
