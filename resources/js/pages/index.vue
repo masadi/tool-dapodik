@@ -5,6 +5,7 @@ definePage({
     subject: "Web",
   },
 });
+const btnLoading = ref(false);
 const sekolah_id = ref();
 const sekolah = ref();
 const items = ref([]);
@@ -12,6 +13,7 @@ const isAllowed = ref(true);
 const jam_sinkron = ref(false);
 const error = ref(false);
 const clickMe = async () => {
+  btnLoading.value = true;
   const find = items.value.find((s) => {
     return s.sekolah_id === sekolah_id.value;
   });
@@ -41,6 +43,7 @@ const fetchData = async () => {
     sekolah.value = getData.user?.sekolah;
     error.value = getData.error;
     jam_sinkron.value = getData.jam_sinkron;
+    btnLoading.value = false;
   } catch (error) {
     console.error(error);
   } finally {
@@ -52,8 +55,10 @@ const resetSekolah = () => {
   isDialogVisible.value = true;
 };
 const reset = async () => {
+  btnLoading.value = true;
   isDialogVisible.value = false;
   await useApi(createUrl("/reset"));
+  btnLoading.value = false;
   appLogout();
 };
 const connectToDapo = async () => {
@@ -100,7 +105,13 @@ const restore = async (yayasan_id) => {
   <VCard class="mt-4" v-else>
     <VCardItem>
       <template #append v-if="sekolah">
-        <VBtn color="error" @click="resetSekolah">Reset</VBtn>
+        <VBtn
+          color="error"
+          @click="resetSekolah"
+          :loading="btnLoading"
+          :disabled="btnLoading"
+          >Reset</VBtn
+        >
       </template>
       <VCardTitle> {{ sekolah ? "Data" : "Registrasi" }} Sekolah </VCardTitle>
     </VCardItem>
@@ -151,7 +162,12 @@ const restore = async (yayasan_id) => {
           :loading="isDisabled"
         >
           <template #append>
-            <VBtn :icon="$vuetify.display.smAndDown" @click="clickMe">
+            <VBtn
+              :icon="$vuetify.display.smAndDown"
+              @click="clickMe"
+              :loading="btnLoading"
+              :disabled="btnLoading"
+            >
               <VIcon icon="tabler-device-floppy" color="#fff" size="22" />
               <span v-if="$vuetify.display.mdAndUp" class="ms-3">Simpan</span>
             </VBtn>

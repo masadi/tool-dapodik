@@ -23,6 +23,7 @@ use App\Models\Sekolah;
 use App\Models\Semester;
 use App\Models\User;
 use App\Models\Yayasan;
+use App\Models\Wilayah;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -85,6 +86,7 @@ class DapodikController extends Controller
         $user = auth()->user();
         $JenisPendaftaran = [];
         $JenisPtk = [];
+        $wilayah = [];
         if ($request->isMethod('post')) {
             if(request()->data == 'yayasan'){
                 Yayasan::where('yayasan_id', request()->yayasan_id)->update(['soft_delete' => 0]);
@@ -139,8 +141,12 @@ class DapodikController extends Controller
         } else {
             $semester = NULL;
             try {
-                $JenisPendaftaran = JenisPendaftaran::where('daftar_sekolah', 1)->whereNull('expired_date')->orderBy('jenis_pendaftaran_id')->get();
-                $JenisPtk = JenisPtk::whereNull('expired_date')->orderBy('jenis_ptk_id')->get();
+                if(request()->ptk){
+                    $wilayah = Wilayah::where('id_level_wilayah', 1)->orderBy('kode_wilayah')->get();
+                } else {
+                    $JenisPendaftaran = JenisPendaftaran::where('daftar_sekolah', 1)->whereNull('expired_date')->orderBy('jenis_pendaftaran_id')->get();
+                    $JenisPtk = JenisPtk::whereNull('expired_date')->orderBy('jenis_ptk_id')->get();
+                }
                 $semester = Semester::where('periode_aktif', 1)->first();
             } catch (\Throwable $th) {
                 //throw $th;
@@ -150,6 +156,7 @@ class DapodikController extends Controller
                 'jenis_pendaftaran' => $JenisPendaftaran,
                 'jenis_ptk' => $JenisPtk,
                 'semester' => $semester,
+                'wilayah' => $wilayah,
                 'jam_sinkron' => $this->jam_sinkron(),
             ];
         }
@@ -713,5 +720,33 @@ class DapodikController extends Controller
         $now = Carbon::now()->timezone($timezone);
         $jam_sinkron = Carbon::now()->timezone($timezone)->isBetween($start, $end, false);
         return $jam_sinkron;
+    }
+    public function tambah_ptk(){
+        request()->validate(
+            [
+                'nik' => 'required|unique:dapodik.ptk,nik',
+            ],
+            [
+                'nik.required' => 'Sekolah tidak boleh kosong',
+                'nik.unique' => 'NIK telah terdaftar',
+            ]
+        );
+        $data = [
+            'color' => 'success',
+            'text' => 'PTK baru berhasil disimpan',
+            'title' => 'Berhasil'
+        ];
+        return response()->json($data);
+    }
+    public function wilayah(){
+        $data = Wilayah::where(function($query){
+            if(request()->cari == 'kabupaten'){
+                $query->where('id_level_wilayah', 2);
+            } else {
+                $query->where('id_level_wilayah', 3);
+            }
+            $query->where('mst_kode_wilayah', request()->kode_wilayah);
+        })->orderBy('kode_wilayah')->get();
+        return response()->json($data);
     }
 }

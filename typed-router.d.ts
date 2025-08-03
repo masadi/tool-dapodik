@@ -24,6 +24,7 @@ declare module 'vue-router/auto-routes' {
     'pd': RouteRecordInfo<'pd', '/pd', Record<never, never>, Record<never, never>>,
     'pip': RouteRecordInfo<'pip', '/pip', Record<never, never>, Record<never, never>>,
     'ptk': RouteRecordInfo<'ptk', '/ptk', Record<never, never>, Record<never, never>>,
+    'tambah-ptk': RouteRecordInfo<'tambah-ptk', '/tambah-ptk', Record<never, never>, Record<never, never>>,
     'tarik-pd': RouteRecordInfo<'tarik-pd', '/tarik/pd', Record<never, never>, Record<never, never>>,
     'tarik-ptk': RouteRecordInfo<'tarik-ptk', '/tarik/ptk', Record<never, never>, Record<never, never>>,
   }

@@ -17,7 +17,7 @@ onMounted(async () => {
 });
 const isLoading = ref(false);
 const sekolah = ref();
-const jam_sinkron = ref(true);
+const jam_sinkron = ref(false);
 const fetchData = async () => {
   isLoading.value = true;
   try {

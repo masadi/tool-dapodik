@@ -7,6 +7,13 @@ export default [
     subject: 'Web',
   },
   {
+    title: 'Tambah PTK',
+    to: { name: 'tambah-ptk' },
+    icon: { icon: 'tabler-school' },
+    action: 'read',
+    subject: 'Ptk',
+  },
+  {
     title: 'Tarik PTK',
     to: { name: 'tarik-ptk' },
     icon: { icon: 'tabler-user-down' },

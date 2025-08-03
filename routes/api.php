@@ -23,6 +23,8 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('periodik', [DapodikController::class, 'periodik']);
     Route::get('pip', [DapodikController::class, 'pip']);
     Route::post('pip', [DapodikController::class, 'pip']);
+    Route::post('tambah-ptk', [DapodikController::class, 'tambah_ptk']);
+    Route::post('wilayah', [DapodikController::class, 'wilayah']);
     Route::get('/user', function (Request $request) {
         return $request->user();
     });

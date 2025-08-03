@@ -134,6 +134,18 @@ class AuthController extends Controller
                 'subject' => 'Web'
             ],
         ];
+        if($user->email == 'achmadi551@guru.smp.belajar.id'){
+            $userAbility = [
+                [
+                    'action' => 'read',
+                    'subject' => 'Web'
+                ],
+                [
+                    'action' => 'read',
+                    'subject' => 'Ptk'
+                ],
+            ];
+        }
         return [
             'error' => FALSE,
             'userAbility' => $userAbility,
