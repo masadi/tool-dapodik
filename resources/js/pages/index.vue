@@ -137,7 +137,6 @@ const restore = async (yayasan_id) => {
       </VTable>
     </VCardText>
     <VCardText v-else>
-      {{ jam_sinkron }}
       <template v-if="jam_sinkron">
         <JamSinkron />
       </template>
