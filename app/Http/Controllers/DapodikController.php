@@ -63,14 +63,14 @@ class DapodikController extends Controller
     {
         $sekolah = [];
         $error = null;
+        $user = auth()->user();
         try {
             $sekolah = $this->get_sekolah();
+            $user->sekolah = Sekolah::on('dapodik')->with(['yayasan'])->find($user->sekolah_id);
         } catch (\Throwable $th) {
             //sdd($th->getMessage());
             $error = Str::of($th->getMessage())->contains('fe_sendauth');
         }
-        $user = auth()->user();
-        $user->sekolah = ($user->sekolah_id) ? $user->sekolah_id : Sekolah::on('dapodik')->with(['yayasan'])->find($user->sekolah_id);
         //Sekolah::find($user->sekolah_id);
         $data = [
             'jam_sinkron' => $this->jam_sinkron(),
