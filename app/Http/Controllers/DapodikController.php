@@ -70,7 +70,7 @@ class DapodikController extends Controller
             $error = Str::of($th->getMessage())->contains('fe_sendauth');
         }
         $user = auth()->user();
-        $user->sekolah = Sekolah::on('dapodik')->with(['yayasan'])->find($user->sekolah_id);
+        $user->sekolah = ($user->sekolah_id) ? $user->sekolah_id : Sekolah::on('dapodik')->with(['yayasan'])->find($user->sekolah_id);
         //Sekolah::find($user->sekolah_id);
         $data = [
             'jam_sinkron' => $this->jam_sinkron(),
