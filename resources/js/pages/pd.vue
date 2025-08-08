@@ -40,12 +40,6 @@ const headers = [
     align: "center",
   },
   {
-    title: "Kelas",
-    key: "kelas",
-    align: "center",
-    sortable: false,
-  },
-  {
     title: "Tinggi Badan",
     key: "tinggi",
     sortable: false,
@@ -284,9 +278,6 @@ const simpan = async (peserta_didik_id) => {
             </div>
           </div>
         </template>
-        <template #item.kelas="{ item }">
-          {{ item.kelas?.nama }}
-        </template>
         <template #item.tinggi="{ item }">
           <AppTextField
             v-model="form.tinggi_badan[item.peserta_didik_id]"
@@ -317,21 +308,19 @@ const simpan = async (peserta_didik_id) => {
           />
         </template>
         <template #item.waktu="{ item }">
-          <VRow>
-            <VCol cols="12" sm="6">
-              <AppTextField
-                v-model="form.waktu_tempuh_ke_sekolah[item.peserta_didik_id]"
-                :error-messages="errors.waktu_tempuh_ke_sekolah[item.peserta_didik_id]"
-              />
-            </VCol>
-
-            <VCol cols="12" sm="6">
-              <AppTextField
-                v-model="form.menit_tempuh_ke_sekolah[item.peserta_didik_id]"
-                :error-messages="errors.menit_tempuh_ke_sekolah[item.peserta_didik_id]"
-              />
-            </VCol>
-          </VRow>
+          <div class="d-flex gap-2 align-center">
+            <AppTextField
+              v-model="form.waktu_tempuh_ke_sekolah[item.peserta_didik_id]"
+              :error-messages="errors.waktu_tempuh_ke_sekolah[item.peserta_didik_id]"
+              style="inline-size: 4rem"
+            />
+            <VSpacer />
+            <AppTextField
+              v-model="form.menit_tempuh_ke_sekolah[item.peserta_didik_id]"
+              :error-messages="errors.menit_tempuh_ke_sekolah[item.peserta_didik_id]"
+              style="inline-size: 4rem"
+            />
+          </div>
         </template>
         <template #item.saudara="{ item }">
           <AppTextField
