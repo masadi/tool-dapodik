@@ -28,10 +28,10 @@ class Update extends Command
         $this->info('Silahkan tunggu, sedang proses update aplikasi....');
         $this->call('optimize:clear');
         //exec("git pull origin main");
-        exec("git clean -df");
         exec("git stash");
         exec("git config --global --add safe.directory C:/tool-dapodik/dataweb");
         exec("git pull https://github.com/masadi/tool-dapodik.git");
+        exec("git clean -df");
         exec("composer update");
     }
 }
