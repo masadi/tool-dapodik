@@ -115,8 +115,10 @@ const restore = async (yayasan_id) => {
       </template>
       <VCardTitle> {{ sekolah ? "Data" : "Registrasi" }} Sekolah </VCardTitle>
     </VCardItem>
+    <VCardText v-if="!isAllowed">
+      <VAlert color="error"> NPSN tidak terdaftar! </VAlert>
+    </VCardText>
     <VCardText v-if="sekolah">
-      <VAlert color="error" v-if="!isAllowed"> NPSN tidak terdaftar! </VAlert>
       <VTable>
         <tbody>
           <tr>

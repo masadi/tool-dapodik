@@ -10,7 +10,7 @@ onMounted(async () => {
   await fetchData();
 });
 const isLoading = ref(false);
-const jam_sinkron = ref(false);
+const sekolah = ref();
 const fetchData = async () => {
   isLoading.value = true;
   try {
@@ -22,7 +22,7 @@ const fetchData = async () => {
       })
     );
     let getData = response.data.value;
-    jam_sinkron.value = getData.jam_sinkron;
+    sekolah.value = getData.sekolah;
     const provinsi_id = fields.value.find((s) => {
       return s.id === "provinsi_id";
     });
@@ -218,17 +218,19 @@ const changeWilayah = async (field, val) => {
 };
 </script>
 <template>
-  <VCard>
-    <VCardItem class="pb-4">
-      <VCardTitle>Tambah PTK</VCardTitle>
-    </VCardItem>
-    <VDivider />
-    <VForm ref="refVForm" @submit.prevent="onSubmit">
-      <VCardText>
-        <template v-if="jam_sinkron">
-          <JamSinkron />
-        </template>
-        <template v-else>
+  <template v-if="isLoading">
+    <VCard class="text-center">
+      <VProgressCircular :size="60" indeterminate color="error" class="my-10" />
+    </VCard>
+  </template>
+  <template v-else>
+    <VCard v-if="sekolah">
+      <VCardItem class="pb-4">
+        <VCardTitle>Tambah PTK</VCardTitle>
+      </VCardItem>
+      <VDivider />
+      <VForm ref="refVForm" @submit.prevent="onSubmit">
+        <VCardText>
           <VRow>
             <template v-for="field in fields">
               <VCol cols="12">
@@ -318,10 +320,20 @@ const changeWilayah = async (field, val) => {
               </VRow>
             </VCol>
           </VRow>
-        </template>
+        </VCardText>
+      </VForm>
+    </VCard>
+    <VCard color="#007BB6" v-else>
+      <VCardText>
+        <p class="clamp-text text-white mb-0">
+          Data Sekolah tidak ditemukan. Silahkan Simpan Data Sekolah terlebih dahulu
+          <RouterLink class="text-success ms-1" :to="{ name: 'root' }">
+            disini
+          </RouterLink>
+        </p>
       </VCardText>
-    </VForm>
-  </VCard>
+    </VCard>
+  </template>
   <VSnackbar v-model="isSnackbarTopEndVisible" color="success" location="top end">
     PTK baru berhasil disimpan.
   </VSnackbar>
