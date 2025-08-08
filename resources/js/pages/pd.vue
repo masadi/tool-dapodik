@@ -274,6 +274,16 @@ const simpan = async (peserta_didik_id) => {
           Jml Saudara <br />
           Kandung
         </template>
+        <template #item.nama="{ item }">
+          <div class="d-flex align-center gap-x-4">
+            <div class="d-flex flex-column">
+              <h6 class="text-base">{{ item.nama }}</h6>
+              <div class="text-sm">
+                {{ item.kelas?.nama }}
+              </div>
+            </div>
+          </div>
+        </template>
         <template #item.kelas="{ item }">
           {{ item.kelas?.nama }}
         </template>

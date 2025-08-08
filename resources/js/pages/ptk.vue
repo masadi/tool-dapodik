@@ -1,5 +1,11 @@
 <script setup>
 import { useDebounceFn } from "@vueuse/core";
+import { Indonesian } from "flatpickr/dist/l10n/id.js";
+const dateConfig = ref({
+  locale: Indonesian,
+  altFormat: "j F Y",
+  altInput: true,
+});
 definePage({
   meta: {
     action: "read",
@@ -34,14 +40,20 @@ const headers = [
     nowrap: true,
   },
   {
-    title: "NIK",
-    key: "nik",
+    title: "Status Kepegawaian",
+    key: "status_kepegawaian_id",
   },
   {
-    title: "Induk",
-    key: "induk",
-    align: "center",
-    sortable: false,
+    title: "sk pengangkatan",
+    key: "sk_pengangkatan",
+  },
+  {
+    title: "tmt pengangkatan",
+    key: "tmt_pengangkatan",
+  },
+  {
+    title: "lembaga pengangkat",
+    key: "lembaga_pengangkat_id",
   },
   {
     title: "Jenis PTK",
@@ -51,6 +63,24 @@ const headers = [
   {
     title: "Jabatan PTK",
     key: "jabatan_ptk",
+    sortable: false,
+  },
+  {
+    title: "nomor surat tugas",
+    key: "nomor_surat_tugas",
+  },
+  {
+    title: "tanggal surat tugas",
+    key: "tanggal_surat_tugas",
+  },
+  {
+    title: "tmt tugas",
+    key: "tmt_tugas",
+  },
+  {
+    title: "Induk",
+    key: "induk",
+    align: "center",
     sortable: false,
   },
   {
@@ -73,14 +103,24 @@ const items = ref([]);
 const total = ref(0);
 const jenis_ptk = ref([]);
 const jabatan_ptk = ref([]);
+const status_kepegawaian = ref([]);
+const lembaga_pengangkat = ref([]);
 const updateSortBy = (val) => {
   options.value.sortby = val[0]?.key;
   options.value.sortbydesc = val[0]?.order;
 };
 const form = ref({
-  ptk_induk: {},
+  status_kepegawaian_id: {},
+  lembaga_pengangkat_id: {},
+  tmt_tugas: {},
+  sk_pengangkatan: {},
+  tmt_pengangkatan: {},
   jenis_ptk_id: {},
   jabatan_ptk_id: {},
+  nomor_surat_tugas: {},
+  tanggal_surat_tugas: {},
+  tmt_tugas: {},
+  ptk_induk: {},
 });
 const isSnackbarTopEndVisible = ref(false);
 const fetchItem = async () => {
@@ -101,16 +141,27 @@ const fetchItem = async () => {
     items.value = getData.data.data;
     total.value = getData.data.total;
     jenis_ptk.value = getData.jenis_ptk;
+    status_kepegawaian.value = getData.status_kepegawaian;
+    lembaga_pengangkat.value = getData.lembaga_pengangkat;
     items.value.forEach((e) => {
       jabatan_ptk.value[e.ptk_terdaftar.ptk_terdaftar_id] = getData.jabatan;
-      form.value.ptk_induk[e.ptk_terdaftar.ptk_terdaftar_id] = parseInt(
-        e.ptk_terdaftar.ptk_induk
-      );
+      form.value.status_kepegawaian_id[e.ptk_id] = parseInt(e.status_kepegawaian_id);
+      form.value.sk_pengangkatan[e.ptk_id] = e.sk_pengangkatan;
+      form.value.tmt_pengangkatan[e.ptk_id] = e.tmt_pengangkatan;
+      form.value.lembaga_pengangkat_id[e.ptk_id] = parseInt(e.lembaga_pengangkat_id);
       form.value.jenis_ptk_id[e.ptk_terdaftar.ptk_terdaftar_id] = parseInt(
         e.ptk_terdaftar.jenis_ptk_id
       );
       form.value.jabatan_ptk_id[e.ptk_terdaftar.ptk_terdaftar_id] = parseInt(
         e.ptk_terdaftar.jabatan_ptk_id
+      );
+      form.value.nomor_surat_tugas[e.ptk_terdaftar.ptk_terdaftar_id] =
+        e.ptk_terdaftar.nomor_surat_tugas;
+      form.value.tanggal_surat_tugas[e.ptk_terdaftar.ptk_terdaftar_id] =
+        e.ptk_terdaftar.tanggal_surat_tugas;
+      form.value.tmt_tugas[e.ptk_terdaftar.ptk_terdaftar_id] = e.ptk_terdaftar.tmt_tugas;
+      form.value.ptk_induk[e.ptk_terdaftar.ptk_terdaftar_id] = parseInt(
+        e.ptk_terdaftar.ptk_induk
       );
     });
   } catch (error) {
@@ -133,20 +184,31 @@ watch(
   }
 );
 const loadings = ref([]);
-const id = ref();
-const simpan = async (ptk_terdaftar_id) => {
-  id.value = ptk_terdaftar_id;
-  loadings.value[ptk_terdaftar_id] = true;
+const simpan = async (ptk) => {
+  loadings.value[ptk.ptk_id] = true;
   await $api("/guru", {
     method: "POST",
     body: {
-      ptk_terdaftar_id: ptk_terdaftar_id,
-      ptk_induk: form.value.ptk_induk[ptk_terdaftar_id],
-      jenis_ptk_id: form.value.jenis_ptk_id[ptk_terdaftar_id],
-      jabatan_ptk_id: form.value.jabatan_ptk_id[ptk_terdaftar_id],
+      ptk_id: ptk.ptk_id,
+      ptk_terdaftar_id: ptk.ptk_terdaftar.ptk_terdaftar_id,
+      status_kepegawaian_id: form.value.status_kepegawaian_id[ptk.ptk_id],
+      lembaga_pengangkat_id: form.value.lembaga_pengangkat_id[ptk.ptk_id],
+      tmt_tugas: form.value.tmt_tugas[ptk.ptk_id],
+      sk_pengangkatan: form.value.sk_pengangkatan[ptk.ptk_id],
+      tmt_pengangkatan: form.value.tmt_pengangkatan[ptk.ptk_id],
+      //jenis_ptk_id: {},
+      //jabatan_ptk_id: {},
+      //ptk_induk: {},
+      jenis_ptk_id: form.value.jenis_ptk_id[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      jabatan_ptk_id: form.value.jabatan_ptk_id[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      ptk_induk: form.value.ptk_induk[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      nomor_surat_tugas: form.value.nomor_surat_tugas[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      tanggal_surat_tugas:
+        form.value.tanggal_surat_tugas[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      tmt_tugas: form.value.tmt_tugas[ptk.ptk_terdaftar.ptk_terdaftar_id],
     },
     async onResponse() {
-      loadings.value[ptk_terdaftar_id] = false;
+      loadings.value[ptk.ptk_id] = false;
       isSnackbarTopEndVisible.value = true;
     },
   });
@@ -258,6 +320,145 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
         @update:sortBy="updateSortBy"
         :header-props="{ class: 'text-no-wrap' }"
       >
+        <template v-slot:headers="{}" hide-default-header>
+          <tr>
+            <th class="text-center" colspan="5">Biodata</th>
+            <th
+              class="text-center"
+              colspan="6"
+              style="
+                border-left: thin solid
+                  rgba(var(--v-border-color), var(--v-border-opacity));
+              "
+            >
+              Penugasan
+            </th>
+            <th
+              class="text-center"
+              rowspan="2"
+              style="
+                border-left: thin solid
+                  rgba(var(--v-border-color), var(--v-border-opacity));
+              "
+            >
+              aksi
+            </th>
+          </tr>
+          <tr>
+            <th class="text-center">Nama</th>
+            <th class="text-center">Status Kepegawaian</th>
+            <th class="text-center">sk pengangkatan</th>
+            <th class="text-center">tmt pengangkatan</th>
+            <th class="text-center">lembaga pengangkat</th>
+            <th class="text-center">Jenis PTK</th>
+            <th class="text-center">Jabatan PTK</th>
+            <th class="text-center">nomor surat tugas</th>
+            <th class="text-center">tanggal surat tugas</th>
+            <th class="text-center">tmt tugas</th>
+            <th
+              class="text-center"
+              style="
+                border-left: thin solid
+                  rgba(var(--v-border-color), var(--v-border-opacity));
+              "
+            >
+              Induk
+            </th>
+          </tr>
+        </template>
+        <template #item.nama="{ item }">
+          <div class="d-flex align-center gap-x-4">
+            <div class="d-flex flex-column">
+              <h6 class="text-base">{{ item.nama }}</h6>
+              <div class="text-sm">
+                {{ item.nik }}
+              </div>
+            </div>
+          </div>
+        </template>
+        <template #item.status_kepegawaian_id="{ item }">
+          <AppAutocomplete
+            v-model="form.status_kepegawaian_id[item.ptk_id]"
+            :items="status_kepegawaian"
+            placeholder="== Pilih Status =="
+            item-title="nama"
+            item-value="status_kepegawaian_id"
+            style="inline-size: 10rem"
+          />
+        </template>
+        <template #item.sk_pengangkatan="{ item }">
+          <AppTextField
+            v-model="form.sk_pengangkatan[item.ptk_id]"
+            placeholder="SK Pengangkatan"
+            style="inline-size: 15.625rem"
+          />
+        </template>
+        <template #item.tmt_pengangkatan="{ item }">
+          <AppDateTimePicker
+            style="inline-size: 9rem"
+            v-model="form.tmt_pengangkatan[item.ptk_id]"
+            placeholder="== Pilih Tanggal =="
+            :config="dateConfig"
+          />
+        </template>
+        <template #item.lembaga_pengangkat_id="{ item }">
+          <AppAutocomplete
+            v-model="form.lembaga_pengangkat_id[item.ptk_id]"
+            :items="lembaga_pengangkat"
+            placeholder="== Pilih Lembaga =="
+            item-title="nama"
+            item-value="lembaga_pengangkat_id"
+            style="inline-size: 13rem"
+          />
+        </template>
+        <template #item.jenis_ptk="{ item }">
+          <AppAutocomplete
+            v-model="form.jenis_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]"
+            :items="jenis_ptk"
+            placeholder="== Pilih Jenis PTK =="
+            item-title="jenis_ptk"
+            item-value="jenis_ptk_id"
+            @update:model-value="
+              changeJenisPtk(item.ptk_terdaftar.ptk_terdaftar_id, $event)
+            "
+            style="inline-size: 10rem"
+          />
+        </template>
+        <template #item.jabatan_ptk="{ item }">
+          <AppAutocomplete
+            v-model="form.jabatan_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]"
+            :items="jabatan_ptk[item.ptk_terdaftar.ptk_terdaftar_id]"
+            placeholder="== Pilih Jabatan PTK =="
+            item-title="jabatan_ptk"
+            item-value="jabatan_ptk_id"
+            :disabled="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
+            :loading="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
+            style="inline-size: 15rem"
+          />
+        </template>
+        <template #item.nomor_surat_tugas="{ item }">
+          <AppTextField
+            v-model="form.nomor_surat_tugas[item.ptk_terdaftar.ptk_terdaftar_id]"
+            placeholder="Nomor Surat Tugas"
+            style="inline-size: 15.625rem"
+          />
+        </template>
+        <template #item.tanggal_surat_tugas="{ item }">
+          <AppDateTimePicker
+            style="inline-size: 9rem"
+            v-model="form.tanggal_surat_tugas[item.ptk_terdaftar.ptk_terdaftar_id]"
+            placeholder="== Pilih Tanggal =="
+            :config="dateConfig"
+          />
+        </template>
+        <template #item.tmt_tugas="{ item }">
+          <AppDateTimePicker
+            style="inline-size: 9rem"
+            v-model="form.tmt_tugas[item.ptk_terdaftar.ptk_terdaftar_id]"
+            placeholder="== Pilih Tanggal =="
+            :config="dateConfig"
+          />
+        </template>
         <template #item.induk="{ item }">
           <AppSelect
             :items="[
@@ -271,37 +472,15 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
               },
             ]"
             v-model="form.ptk_induk[item.ptk_terdaftar.ptk_terdaftar_id]"
-          />
-        </template>
-        <template #item.jenis_ptk="{ item }">
-          <AppAutocomplete
-            v-model="form.jenis_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :items="jenis_ptk"
-            placeholder="== Pilih Jenis PTK =="
-            item-title="jenis_ptk"
-            item-value="jenis_ptk_id"
-            @update:model-value="
-              changeJenisPtk(item.ptk_terdaftar.ptk_terdaftar_id, $event)
-            "
-          />
-        </template>
-        <template #item.jabatan_ptk="{ item }">
-          <AppAutocomplete
-            v-model="form.jabatan_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :items="jabatan_ptk[item.ptk_terdaftar.ptk_terdaftar_id]"
-            placeholder="== Pilih Jabatan PTK =="
-            item-title="jabatan_ptk"
-            item-value="jabatan_ptk_id"
-            :disabled="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :loading="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
+            style="inline-size: 7rem"
           />
         </template>
         <template #item.aksi="{ item }">
           <VBtn
             size="small"
-            @click="simpan(item.ptk_terdaftar.ptk_terdaftar_id)"
-            :disabled="loadings[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :loading="loadings[item.ptk_terdaftar.ptk_terdaftar_id]"
+            @click="simpan(item)"
+            :disabled="loadings[item.ptk_id]"
+            :loading="loadings[item.ptk_id]"
             >Simpan</VBtn
           >
         </template>

@@ -24,6 +24,8 @@ use App\Models\Semester;
 use App\Models\User;
 use App\Models\Yayasan;
 use App\Models\Wilayah;
+use App\Models\StatusKepegawaian;
+use App\Models\LembagaPengangkat;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -587,10 +589,25 @@ class DapodikController extends Controller
                 'jabatan_ptk_id.required' => 'Berat Badan tidak boleh kosong!',
             ]
         );
+        $ptk = Ptk::find(request()->ptk_id);
+        $ptk->status_kepegawaian_id = request()->status_kepegawaian_id;
+        $ptk->lembaga_pengangkat_id = request()->lembaga_pengangkat_id;
+        $ptk->sk_pengangkatan = request()->sk_pengangkatan;
+        $ptk->tmt_pengangkatan = request()->tmt_pengangkatan;
+        $ptk->updater_id = auth()->user()->pengguna_id;
+        $ptk->last_update = Carbon::now()->addMinutes(120);
+        $ptk->last_sync = Carbon::now()->addMinutes(90);
+        $ptk->save();
         $find = PtkTerdaftar::find(request()->ptk_terdaftar_id);
         $find->ptk_induk = request()->ptk_induk;
         $find->jenis_ptk_id = request()->jenis_ptk_id;
         $find->jabatan_ptk_id = request()->jabatan_ptk_id;
+        $find->nomor_surat_tugas = request()->nomor_surat_tugas;
+        $find->tanggal_surat_tugas = request()->tanggal_surat_tugas;
+        $find->tmt_tugas = request()->tmt_tugas;
+        $find->updater_id = auth()->user()->pengguna_id;
+        $find->last_update = Carbon::now()->addMinutes(120);
+        $find->last_sync = Carbon::now()->addMinutes(90);
         $find->save();
         $data = [
             'request' => request()->all(),
@@ -699,6 +716,8 @@ class DapodikController extends Controller
             'data' => $data, 
             'jabatan' => $jabatan,
             'jenis_ptk' => JenisPtk::whereNull('expired_date')->orderBy('jenis_ptk_id')->get(),
+            'status_kepegawaian' => StatusKepegawaian::whereNull('expired_date')->orderBy('status_kepegawaian_id')->get(),
+            'lembaga_pengangkat' => LembagaPengangkat::whereNull('expired_date')->orderBy('lembaga_pengangkat_id')->get(),
             'q' => request()->q
         ]);
     }
