@@ -33,6 +33,7 @@ const fetchData = async () => {
   }
 };
 const headers = [
+  { title: "Menu", width: 1, key: "data-table-expand", align: "center" },
   {
     title: "Nama",
     key: "nama",
@@ -40,6 +41,24 @@ const headers = [
     nowrap: true,
   },
   {
+    title: "Tmp. Lahir",
+    key: "tempat_lahir",
+    sortable: true,
+    nowrap: true,
+  },
+  {
+    title: "Tgl. Lahir",
+    key: "tanggal_lahir",
+    sortable: true,
+    nowrap: true,
+  },
+  {
+    title: "Nama Ibu Kandung",
+    key: "nama_ibu_kandung",
+    sortable: true,
+    nowrap: true,
+  },
+  /*{
     title: "Status Kepegawaian",
     key: "status_kepegawaian_id",
   },
@@ -88,7 +107,7 @@ const headers = [
     key: "aksi",
     align: "center",
     sortable: false,
-  },
+  },*/
 ];
 const options = ref({
   page: 1,
@@ -103,6 +122,7 @@ const items = ref([]);
 const total = ref(0);
 const jenis_ptk = ref([]);
 const jabatan_ptk = ref([]);
+const jabatan_tugas = ref([]);
 const status_kepegawaian = ref([]);
 const lembaga_pengangkat = ref([]);
 const updateSortBy = (val) => {
@@ -121,6 +141,15 @@ const form = ref({
   tanggal_surat_tugas: {},
   tmt_tugas: {},
   ptk_induk: {},
+  tambahan: {
+    ptk_tugas_tambahan_id: [],
+    id_ruang: [],
+    jabatan_ptk_id: [],
+    jumlah_jam: [],
+    nomor_sk: [],
+    tmt_tambahan: [],
+    tst_tambahan: [],
+  },
 });
 const isSnackbarTopEndVisible = ref(false);
 const fetchItem = async () => {
@@ -141,10 +170,24 @@ const fetchItem = async () => {
     items.value = getData.data.data;
     total.value = getData.data.total;
     jenis_ptk.value = getData.jenis_ptk;
+    jabatan_tugas.value = getData.jabatan_tugas;
     status_kepegawaian.value = getData.status_kepegawaian;
     lembaga_pengangkat.value = getData.lembaga_pengangkat;
     items.value.forEach((e) => {
       jabatan_ptk.value[e.ptk_terdaftar.ptk_terdaftar_id] = getData.jabatan;
+      const tt = [];
+      e.tugas_tambahan.forEach((t) => {
+        tt.push({
+          ptk_tugas_tambahan_id: t.ptk_tugas_tambahan_id,
+          id_ruang: t.id_ruang,
+          jabatan_ptk_id: t.jabatan_ptk_id,
+          jumlah_jam: t.jumlah_jam,
+          nomor_sk: t.nomor_sk,
+          tmt_tambahan: t.tmt_tambahan,
+          tst_tambahan: t.tst_tambahan,
+        });
+      });
+      form.value.tambahan[e.ptk_id] = tt;
       form.value.status_kepegawaian_id[e.ptk_id] = parseInt(e.status_kepegawaian_id);
       form.value.sk_pengangkatan[e.ptk_id] = e.sk_pengangkatan;
       form.value.tmt_pengangkatan[e.ptk_id] = e.tmt_pengangkatan;
@@ -184,6 +227,22 @@ watch(
   }
 );
 const loadings = ref([]);
+const simpanTambahan = async (ptk) => {
+  console.log(ptk);
+  console.log(form.value.tambahan[ptk.ptk_id]);
+  loadings.value[ptk.ptk_id] = true;
+  await $api("/tt", {
+    method: "POST",
+    body: {
+      ptk_id: ptk.ptk_id,
+      tambahan: form.value.tambahan[ptk.ptk_id],
+    },
+    async onResponse() {
+      loadings.value[ptk.ptk_id] = false;
+      isSnackbarTopEndVisible.value = true;
+    },
+  });
+};
 const simpan = async (ptk) => {
   loadings.value[ptk.ptk_id] = true;
   await $api("/guru", {
@@ -264,6 +323,44 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
     },
   });
 };
+const currentTab = ref({});
+const formBio = ref();
+const onSubmit = (aksi, ptk) => {
+  formBio.value?.validate().then(({ valid: isValid }) => {
+    if (isValid) postData(aksi, ptk);
+  });
+};
+const postData = async (aksi, ptk) => {
+  loadings.value[ptk.ptk_id] = true;
+  console.log(aksi);
+  await $api("/guru", {
+    method: "POST",
+    body: {
+      aksi: aksi,
+      ptk_id: ptk.ptk_id,
+      ptk_terdaftar_id: ptk.ptk_terdaftar.ptk_terdaftar_id,
+      status_kepegawaian_id: form.value.status_kepegawaian_id[ptk.ptk_id],
+      lembaga_pengangkat_id: form.value.lembaga_pengangkat_id[ptk.ptk_id],
+      tmt_tugas: form.value.tmt_tugas[ptk.ptk_id],
+      sk_pengangkatan: form.value.sk_pengangkatan[ptk.ptk_id],
+      tmt_pengangkatan: form.value.tmt_pengangkatan[ptk.ptk_id],
+      //jenis_ptk_id: {},
+      //jabatan_ptk_id: {},
+      //ptk_induk: {},
+      jenis_ptk_id: form.value.jenis_ptk_id[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      jabatan_ptk_id: form.value.jabatan_ptk_id[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      ptk_induk: form.value.ptk_induk[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      nomor_surat_tugas: form.value.nomor_surat_tugas[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      tanggal_surat_tugas:
+        form.value.tanggal_surat_tugas[ptk.ptk_terdaftar.ptk_terdaftar_id],
+      tmt_tugas: form.value.tmt_tugas[ptk.ptk_terdaftar.ptk_terdaftar_id],
+    },
+    async onResponse() {
+      loadings.value[ptk.ptk_id] = false;
+      isSnackbarTopEndVisible.value = true;
+    },
+  });
+};
 </script>
 <template>
   <template v-if="isLoading">
@@ -310,6 +407,7 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
           { value: 50, title: '50' },
         ]"
         :items="items"
+        item-value="ptk_id"
         :server-items-length="total"
         :items-length="total"
         :headers="headers"
@@ -319,9 +417,11 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
         loading-text="Loading..."
         @update:sortBy="updateSortBy"
         :header-props="{ class: 'text-no-wrap' }"
+        show-expand
       >
-        <template v-slot:headers="{}" hide-default-header>
+        <!--template v-slot:headers="{}" hide-default-header>
           <tr>
+            <th class="text-center" rowspan="2">Menu</th>
             <th class="text-center" colspan="5">Biodata</th>
             <th
               class="text-center"
@@ -365,6 +465,364 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
               Induk
             </th>
           </tr>
+        </template-->
+        <template
+          v-slot:item.data-table-expand="{ internalItem, isExpanded, toggleExpand }"
+        >
+          <v-btn
+            :append-icon="
+              isExpanded(internalItem) ? 'mdi-chevron-up' : 'mdi-chevron-down'
+            "
+            :text="isExpanded(internalItem) ? 'Tutup' : 'Buka'"
+            class="text-none"
+            color="medium-emphasis"
+            size="small"
+            variant="text"
+            width="105"
+            border
+            slim
+            @click="toggleExpand(internalItem)"
+          ></v-btn>
+        </template>
+        <template v-slot:expanded-row="{ columns, item }">
+          <tr>
+            <td colspan="5">
+              <VTabs v-model="currentTab[item.ptk_id]" grow stacked>
+                <VTab>
+                  <VIcon icon="tabler-user" class="mb-2" />
+                  <span>Biodata</span>
+                </VTab>
+
+                <VTab>
+                  <VIcon icon="tabler-file-description" class="mb-2" />
+                  <span>Penugasan</span>
+                </VTab>
+
+                <VTab>
+                  <VIcon icon="tabler-briefcase" class="mb-2" />
+                  <span>Tugas Tambahan</span>
+                </VTab>
+              </VTabs>
+              <VWindow v-model="currentTab[item.ptk_id]">
+                <VWindowItem :value="`${item.ptk_id}`">
+                  <VForm ref="formBio" @submit.prevent="onSubmit('bio', item)">
+                    <VRow class="my-4">
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Status Kepegawaian</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppAutocomplete
+                              v-model="form.status_kepegawaian_id[item.ptk_id]"
+                              :items="status_kepegawaian"
+                              placeholder="== Pilih Status =="
+                              item-title="nama"
+                              item-value="status_kepegawaian_id"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >SK Pengangkatan</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppTextField
+                              v-model="form.sk_pengangkatan[item.ptk_id]"
+                              placeholder="SK Pengangkatan"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >TMT Pengangkatan</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppDateTimePicker
+                              v-model="form.tmt_pengangkatan[item.ptk_id]"
+                              placeholder="== Pilih Tanggal =="
+                              :config="dateConfig"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Lembaga Pengangkat</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppAutocomplete
+                              v-model="form.lembaga_pengangkat_id[item.ptk_id]"
+                              :items="lembaga_pengangkat"
+                              placeholder="== Pilih Lembaga =="
+                              item-title="nama"
+                              item-value="lembaga_pengangkat_id"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" />
+                          <VCol cols="12" md="9">
+                            <VBtn
+                              type="submit"
+                              class="me-4"
+                              :disabled="loadings[item.ptk_id]"
+                              :loading="loadings[item.ptk_id]"
+                            >
+                              Simpan
+                            </VBtn>
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                    </VRow>
+                  </VForm>
+                </VWindowItem>
+                <VWindowItem :value="`${item.ptk_id}`">
+                  <VForm ref="formBio" @submit.prevent="onSubmit('tugas', item)">
+                    <VRow class="my-4">
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Jenis PTK</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppAutocomplete
+                              v-model="
+                                form.jenis_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]
+                              "
+                              :items="jenis_ptk"
+                              placeholder="== Pilih Jenis PTK =="
+                              item-title="jenis_ptk"
+                              item-value="jenis_ptk_id"
+                              @update:model-value="
+                                changeJenisPtk(
+                                  item.ptk_terdaftar.ptk_terdaftar_id,
+                                  $event
+                                )
+                              "
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Jabatan PTK</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppAutocomplete
+                              v-model="
+                                form.jabatan_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]
+                              "
+                              :items="jabatan_ptk[item.ptk_terdaftar.ptk_terdaftar_id]"
+                              placeholder="== Pilih Jabatan PTK =="
+                              item-title="jabatan_ptk"
+                              item-value="jabatan_ptk_id"
+                              :disabled="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
+                              :loading="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Nomor Surat Tugas</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppTextField
+                              v-model="
+                                form.nomor_surat_tugas[
+                                  item.ptk_terdaftar.ptk_terdaftar_id
+                                ]
+                              "
+                              placeholder="Nomor Surat Tugas"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Tanggal Surat Tugas</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppDateTimePicker
+                              v-model="
+                                form.tanggal_surat_tugas[
+                                  item.ptk_terdaftar.ptk_terdaftar_id
+                                ]
+                              "
+                              placeholder="== Pilih Tanggal =="
+                              :config="dateConfig"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >TMT Tugas</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppDateTimePicker
+                              v-model="
+                                form.tmt_tugas[item.ptk_terdaftar.ptk_terdaftar_id]
+                              "
+                              placeholder="== Pilih Tanggal =="
+                              :config="dateConfig"
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" class="d-flex align-items-center">
+                            <label class="v-label text-body-2 text-high-emphasis"
+                              >Induk</label
+                            >
+                          </VCol>
+                          <VCol cols="12" md="9">
+                            <AppSelect
+                              :items="[
+                                {
+                                  title: 'Ya',
+                                  value: 1,
+                                },
+                                {
+                                  title: 'Tidak',
+                                  value: 0,
+                                },
+                              ]"
+                              v-model="
+                                form.ptk_induk[item.ptk_terdaftar.ptk_terdaftar_id]
+                              "
+                            />
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                      <VCol cols="12">
+                        <VRow no-gutters>
+                          <VCol cols="12" md="3" />
+                          <VCol cols="12" md="9">
+                            <VBtn
+                              type="submit"
+                              class="me-4"
+                              :disabled="loadings[item.ptk_id]"
+                              :loading="loadings[item.ptk_id]"
+                            >
+                              Simpan
+                            </VBtn>
+                          </VCol>
+                        </VRow>
+                      </VCol>
+                    </VRow>
+                  </VForm>
+                </VWindowItem>
+                <VWindowItem :value="`${item.ptk_id}`">
+                  <VTable class="mb-4">
+                    <thead>
+                      <tr>
+                        <th class="text-center">Jabatan PTK</th>
+                        <th class="text-center">Ruang</th>
+                        <th class="text-center">Nomor SK</th>
+                        <th class="text-center">TM Tambahan</th>
+                        <th class="text-center">TST Tambahan</th>
+                        <th class="text-center">Aksi</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <template v-if="item.tugas_tambahan.length">
+                        <!--
+                      ptk_tugas_tambahan_id: t.ptk_tugas_tambahan_id,
+          id_ruang: t.id_ruang,
+          jabatan_ptk_id: t.jabatan_ptk_id,
+          jumlah_jam: t.jumlah_jam,
+          nomor_sk: t.nomor_sk,
+          tmt_tambahan: t.tmt_tambahan,
+          tst_tambahan: t.tst_tambahan,
+                      -->
+                        <tr
+                          v-for="(tambahan, index) in item.tugas_tambahan"
+                          :key="tambahan.ptk_tugas_tambahan_id"
+                        >
+                          <td>
+                            <AppAutocomplete
+                              v-model="form.tambahan[item.ptk_id][index].jabatan_ptk_id"
+                              :items="jabatan_tugas"
+                              placeholder="== Pilih Jabatan PTK =="
+                              item-title="nama"
+                              item-value="jabatan_ptk_id"
+                            />
+                          </td>
+                          <td>1</td>
+                          <td>
+                            <AppTextField
+                              v-model="form.tambahan[item.ptk_id][index].nomor_sk"
+                              placeholder="Nomor SK"
+                            />
+                          </td>
+                          <td>
+                            <AppDateTimePicker
+                              v-model="form.tambahan[item.ptk_id][index].tmt_tambahan"
+                              placeholder="== Pilih Tanggal =="
+                              :config="dateConfig"
+                            />
+                          </td>
+                          <td>
+                            <AppDateTimePicker
+                              v-model="form.tambahan[item.ptk_id][index].tst_tambahan"
+                              placeholder="== Pilih Tanggal =="
+                              :config="dateConfig"
+                            />
+                          </td>
+                          <td class="text-center">
+                            <VBtn
+                              size="small"
+                              @click="simpanTambahan(item)"
+                              :disabled="loadings[item.ptk_id]"
+                              :loading="loadings[item.ptk_id]"
+                              >Simpan</VBtn
+                            >
+                          </td>
+                        </tr>
+                      </template>
+                      <template v-else>
+                        <td class="text-center" colspan="5">
+                          Tidak ada untuk ditampilkan
+                        </td>
+                      </template>
+                    </tbody>
+                  </VTable>
+                </VWindowItem>
+              </VWindow>
+            </td>
+          </tr>
         </template>
         <template #item.nama="{ item }">
           <div class="d-flex align-center gap-x-4">
@@ -376,7 +834,7 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
             </div>
           </div>
         </template>
-        <template #item.status_kepegawaian_id="{ item }">
+        <!--template #item.status_kepegawaian_id="{ item }">
           <AppAutocomplete
             v-model="form.status_kepegawaian_id[item.ptk_id]"
             :items="status_kepegawaian"
@@ -410,71 +868,13 @@ const changeJenisPtk = async (ptk_terdaftar_id, val) => {
             item-value="lembaga_pengangkat_id"
             style="inline-size: 13rem"
           />
-        </template>
-        <template #item.jenis_ptk="{ item }">
-          <AppAutocomplete
-            v-model="form.jenis_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :items="jenis_ptk"
-            placeholder="== Pilih Jenis PTK =="
-            item-title="jenis_ptk"
-            item-value="jenis_ptk_id"
-            @update:model-value="
-              changeJenisPtk(item.ptk_terdaftar.ptk_terdaftar_id, $event)
-            "
-            style="inline-size: 10rem"
-          />
-        </template>
-        <template #item.jabatan_ptk="{ item }">
-          <AppAutocomplete
-            v-model="form.jabatan_ptk_id[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :items="jabatan_ptk[item.ptk_terdaftar.ptk_terdaftar_id]"
-            placeholder="== Pilih Jabatan PTK =="
-            item-title="jabatan_ptk"
-            item-value="jabatan_ptk_id"
-            :disabled="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
-            :loading="formLoading[item.ptk_terdaftar.ptk_terdaftar_id]"
-            style="inline-size: 15rem"
-          />
-        </template>
-        <template #item.nomor_surat_tugas="{ item }">
-          <AppTextField
-            v-model="form.nomor_surat_tugas[item.ptk_terdaftar.ptk_terdaftar_id]"
-            placeholder="Nomor Surat Tugas"
-            style="inline-size: 15.625rem"
-          />
-        </template>
-        <template #item.tanggal_surat_tugas="{ item }">
-          <AppDateTimePicker
-            style="inline-size: 9rem"
-            v-model="form.tanggal_surat_tugas[item.ptk_terdaftar.ptk_terdaftar_id]"
-            placeholder="== Pilih Tanggal =="
-            :config="dateConfig"
-          />
-        </template>
-        <template #item.tmt_tugas="{ item }">
-          <AppDateTimePicker
-            style="inline-size: 9rem"
-            v-model="form.tmt_tugas[item.ptk_terdaftar.ptk_terdaftar_id]"
-            placeholder="== Pilih Tanggal =="
-            :config="dateConfig"
-          />
-        </template>
-        <template #item.induk="{ item }">
-          <AppSelect
-            :items="[
-              {
-                title: 'Ya',
-                value: 1,
-              },
-              {
-                title: 'Tidak',
-                value: 0,
-              },
-            ]"
-            v-model="form.ptk_induk[item.ptk_terdaftar.ptk_terdaftar_id]"
-            style="inline-size: 7rem"
-          />
-        </template>
+        </template-->
+        <template #item.jenis_ptk="{ item }"> </template>
+        <template #item.jabatan_ptk="{ item }"> </template>
+        <template #item.nomor_surat_tugas="{ item }"> </template>
+        <template #item.tanggal_surat_tugas="{ item }"> </template>
+        <template #item.tmt_tugas="{ item }"> </template>
+        <template #item.induk="{ item }"> </template>
         <template #item.aksi="{ item }">
           <VBtn
             size="small"

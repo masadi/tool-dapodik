@@ -18,6 +18,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
     Route::post('daftar', [DapodikController::class, 'daftar']);
     Route::get('guru', [DapodikController::class, 'guru']);
     Route::post('guru', [DapodikController::class, 'simpan_guru']);
+    Route::post('tt', [DapodikController::class, 'tambahan']);
     Route::post('cek-pd', [DapodikController::class, 'cek_pd']);
     Route::get('periodik', [DapodikController::class, 'periodik']);
     Route::post('periodik', [DapodikController::class, 'periodik']);

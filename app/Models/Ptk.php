@@ -17,4 +17,8 @@ class Ptk extends Model
     {
         return $this->HasOne(PtkTerdaftar::class, 'ptk_id', 'ptk_id');
     }
+    public function tugas_tambahan()
+    {
+        return $this->hasMany(TugasTambahan::class, 'ptk_id', 'ptk_id');
+    }
 }

@@ -26,6 +26,8 @@ use App\Models\Yayasan;
 use App\Models\Wilayah;
 use App\Models\StatusKepegawaian;
 use App\Models\LembagaPengangkat;
+use App\Models\JabatanTugas;
+use App\Models\TugasTambahan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -705,6 +707,9 @@ class DapodikController extends Controller
         $sortby = request()->sortby;
         $data = Ptk::on('dapodik')->with([
             'ptk_terdaftar' => $this->terdaftar(),
+            'tugas_tambahan' => function($query){
+                $query->where('soft_delete', 0);
+            }
         ])->whereHas('ptk_terdaftar', $this->terdaftar())
         ->orderBy($sortby, request()->sortbydesc)
         ->when(request()->q, function ($query) {
@@ -715,6 +720,7 @@ class DapodikController extends Controller
         return response()->json([
             'data' => $data, 
             'jabatan' => $jabatan,
+            'jabatan_tugas' => JabatanTugas::whereNull('expired_date')->orderBy('jabatan_ptk_id')->get(),
             'jenis_ptk' => JenisPtk::whereNull('expired_date')->orderBy('jenis_ptk_id')->get(),
             'status_kepegawaian' => StatusKepegawaian::whereNull('expired_date')->orderBy('status_kepegawaian_id')->get(),
             'lembaga_pengangkat' => LembagaPengangkat::whereNull('expired_date')->orderBy('lembaga_pengangkat_id')->get(),
@@ -767,5 +773,18 @@ class DapodikController extends Controller
             $query->where('mst_kode_wilayah', request()->kode_wilayah);
         })->orderBy('kode_wilayah')->get();
         return response()->json($data);
+    }
+    public function tambahan(){
+        foreach(request()->tambahan as $request){
+            $find = TugasTambahan::find($request['ptk_tugas_tambahan_id']);
+            $find->jabatan_ptk_id = $request['jabatan_ptk_id'];
+            $find->nomor_sk = $request['nomor_sk'];
+            $find->tmt_tambahan = $request['tmt_tambahan'];
+            $find->tst_tambahan = $request['tst_tambahan'];
+            $find->last_update = Carbon::now()->addMinutes(120);
+            $find->last_sync = Carbon::now()->addMinutes(90);
+            $find->updater_id = auth()->user()->pengguna_id;
+            $find->save();
+        }
     }
 }
