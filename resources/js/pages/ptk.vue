@@ -143,9 +143,7 @@ const form = ref({
   ptk_induk: {},
   tambahan: {
     ptk_tugas_tambahan_id: [],
-    id_ruang: [],
     jabatan_ptk_id: [],
-    jumlah_jam: [],
     nomor_sk: [],
     tmt_tambahan: [],
     tst_tambahan: [],
@@ -179,9 +177,7 @@ const fetchItem = async () => {
       e.tugas_tambahan.forEach((t) => {
         tt.push({
           ptk_tugas_tambahan_id: t.ptk_tugas_tambahan_id,
-          id_ruang: t.id_ruang,
           jabatan_ptk_id: t.jabatan_ptk_id,
-          jumlah_jam: t.jumlah_jam,
           nomor_sk: t.nomor_sk,
           tmt_tambahan: t.tmt_tambahan,
           tst_tambahan: t.tst_tambahan,
@@ -749,7 +745,6 @@ const postData = async (aksi, ptk) => {
                     <thead>
                       <tr>
                         <th class="text-center">Jabatan PTK</th>
-                        <th class="text-center">Ruang</th>
                         <th class="text-center">Nomor SK</th>
                         <th class="text-center">TM Tambahan</th>
                         <th class="text-center">TST Tambahan</th>
@@ -758,15 +753,6 @@ const postData = async (aksi, ptk) => {
                     </thead>
                     <tbody>
                       <template v-if="item.tugas_tambahan.length">
-                        <!--
-                      ptk_tugas_tambahan_id: t.ptk_tugas_tambahan_id,
-          id_ruang: t.id_ruang,
-          jabatan_ptk_id: t.jabatan_ptk_id,
-          jumlah_jam: t.jumlah_jam,
-          nomor_sk: t.nomor_sk,
-          tmt_tambahan: t.tmt_tambahan,
-          tst_tambahan: t.tst_tambahan,
-                      -->
                         <tr
                           v-for="(tambahan, index) in item.tugas_tambahan"
                           :key="tambahan.ptk_tugas_tambahan_id"
@@ -780,7 +766,6 @@ const postData = async (aksi, ptk) => {
                               item-value="jabatan_ptk_id"
                             />
                           </td>
-                          <td>1</td>
                           <td>
                             <AppTextField
                               v-model="form.tambahan[item.ptk_id][index].nomor_sk"
